@@ -1,53 +1,76 @@
 /* eslint-disable react/prop-types */
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-// import { useState } from "react";
+import { auth } from "../firebase";
+import Google from "../assets/img/google.png";
 
-const LoginForm = ({ regiter, setRegiter }) => {
-  //   const [logins, setlogins] = useState({
-  //     email: "",
-  //     password: "",
-  //   });
-  const handleLogin = (e) => {
+const LoginForm = ({ register, setRegister, googleSign }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setloading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    setloading(true);
     e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+    console.log("logging you in soon");
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Login successful
-        const user = userCredential.user;
-        console.log("User logged in:", user);
-        // Redirect the user to the chat page or perform additional login logic
-      })
-      .catch((error) => {
-        console.error("Login error:", error);
-        // Display error message to the user if needed
-      });
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+        .then((data) => {
+          alert("succes");
+          console.log(data);
+          setloading(false);
+          navigate("/");
+        })
+        .catch((error) => {
+          alert("an error occured");
+          console.log("sorry an error occured", error);
+          setloading(false);
+        });
+
+      // Redirect to the home page after successful login
+
+      // Replace with your home page route
+    } catch (error) {
+      console.error("Login error:", error);
+      // Display error message to the user if needed
+    }
   };
+
   return (
     <div
-      className={`
-        containe ${regiter ? "hidden" : ""}
-      `}
+      className={`innerContainer ${register ? "hidden" : ""}`}
       id="login-container"
     >
       <form action="#" id="login-form" onSubmit={handleLogin}>
         <div>
           <label htmlFor="email">Email:</label>
-          <input type="email" required name="email" id="email" />
+          <input
+            type="email"
+            required
+            name="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
           <label htmlFor="password">Password</label>
           <input
             type="password"
-            required="true"
+            required
             name="password"
             id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <input type="submit" value="Login" />
+        <input type="submit" value="Login" disabled={loading} />
       </form>
-      <p id="register-link" onClick={() => setRegiter(true)}>
+      <img src={Google} onClick={googleSign} />
+      <button className="btnRegs" onClick={() => setRegister(true)}>
         Register
-      </p>
+      </button>
     </div>
   );
 };

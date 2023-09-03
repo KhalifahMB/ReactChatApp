@@ -1,25 +1,36 @@
 /* eslint-disable no-unused-vars */
 // src/App.js
 import React, { useState } from "react";
-import { app } from "./firebase";
+import { app, auth } from "./firebase";
 import Login from "./components/Login";
 import Chat from "./components/Chat";
 import UserList from "./components/UserList";
+import { useAuthState } from "react-firebase-hooks/auth";
+import "./assets/css/styles.css";
+import Sidebar from "./components/Sidebar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Welcome from "./components/Welcome";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ErrorPage from "./components/Error";
+import SharedLayout from "./components/SharedLayout";
 function App() {
-  const [user, setUser] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null);
-
+  // const [user] = useAuthState(auth);
   return (
-    <div className="App">
-      {!user ? (
-        <Login setUser={setUser} />
-      ) : (
-        <>
-          <UserList setSelectedUser={setSelectedUser} />
-          {selectedUser && <Chat user={user} selectedUser={selectedUser} />}
-        </>
-      )}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Welcome />} />
+        <Route
+          path="chats"
+          element={
+            <ProtectedRoute>
+              <SharedLayout />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<ErrorPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

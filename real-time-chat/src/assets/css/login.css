@@ -1,60 +1,67 @@
 /* ... (same styles as before) ... */
 body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f4f4f4;
-    }
+  font-family: Arial, sans-serif;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
 
-    .container {
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-      width: 400px;
-    }
+.container {
+  background-color: #fff;
+  padding: 30px;
+  padding-left: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    label {
-      font-weight: bold;
-    }
+label {
+  font-weight: bold;
+}
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="file"] {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      width: 100%;
-    }
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
 
-    input[type="submit"] {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background-color 0.3s ease;
-    }
+input[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
 
-    input[type="submit"]:hover {
-      background-color: #0056b3;
-    }
+input[type="submit"]:hover {
+  background-color: #0056b3;
+}
 
-    p {
-      text-align: center;
-      margin-top: 10px;
-    }
+input[type="submit"]:disabled {
+  background-color: gray;
+  cursor: none;
+}
+button {
+  text-align: center;
+  align-self: center;
+  cursor: pointer;
+  margin: 10px 50%;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
