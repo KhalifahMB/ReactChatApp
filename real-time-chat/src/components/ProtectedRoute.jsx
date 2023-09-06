@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
-import { useAppContext } from "../contexts/appContext";
+import { useContext } from "react";
+import { AppContext } from "../contexts/appContext";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-  const { currentUser } = useAppContext();
+  const { currentUser } = useContext(AppContext);
   if (!currentUser) {
     return <Navigate to="/login" />;
   }

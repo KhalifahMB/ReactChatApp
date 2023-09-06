@@ -1,10 +1,10 @@
-import { useRef } from "react";
-import { useAppContext } from "../contexts/appContext";
+import { useContext, useRef } from "react";
+import { AppContext } from "../contexts/appContext";
 import getRelativeTime from "../utils/getRelativeDate";
 
 /* eslint-disable react/prop-types */
 const Message = ({ message }) => {
-  const { currentUser, user } = useAppContext();
+  const { currentUser, user } = useContext(AppContext);
   const timestamp = getRelativeTime(message.date);
   const ref = useRef();
 

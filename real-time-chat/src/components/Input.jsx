@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useAppContext } from "../contexts/appContext";
+import { useContext, useState } from "react";
+import { AppContext } from "../contexts/appContext";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { Timestamp, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase";
@@ -7,7 +7,7 @@ import { v4 as uuid } from "uuid";
 import { serverTimestamp } from "firebase/database";
 
 const Input = () => {
-  const { currentUser, chatId, user } = useAppContext();
+  const { currentUser, chatId, user } = useContext(AppContext);
 
   const [isloading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -73,6 +73,9 @@ const Input = () => {
       setimage(null);
     } catch (error) {
       console.log("Error sending message:", error);
+      setLoading(false);
+      setMessage("");
+      setimage(null);
     }
   };
   return (
@@ -85,22 +88,25 @@ const Input = () => {
           value={message}
           onChange={handleChange}
         />
-        <label htmlFor="file"> Add Image</label>
-        <input
-          type="file"
-          style={{ display: "none" }}
-          onChange={(e) => setimage(e.target.files[0])}
-          id="file"
-        />
-        <span style={{ cursor: "pointer" }}>&#128247;</span>
-        {message && (
+        <div>
+          <label htmlFor="file">
+            <span style={{ cursor: "pointer" }}>&#128247;</span>
+          </label>
           <input
-            type="submit"
-            id="send-button"
-            value="Send"
-            disabled={isloading}
+            type="file"
+            style={{ display: "none" }}
+            onChange={(e) => setimage(e.target.files[0])}
+            id="file"
           />
-        )}
+          {message && (
+            <input
+              type="submit"
+              id="send-button"
+              value="Send"
+              disabled={isloading}
+            />
+          )}
+        </div>
       </form>
     </div>
   );

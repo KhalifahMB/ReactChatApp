@@ -1,12 +1,9 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable react/prop-types */
-/* eslint-disable no-unused-vars */
-
-import { createContext, useEffect, useReducer, useContext } from "react";
+import { createContext, useEffect, useReducer } from "react";
 import { auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-const AppContext = createContext();
+export const AppContext = createContext();
 const initialState = {
   currentUser: {},
   user: {},
@@ -14,13 +11,21 @@ const initialState = {
 };
 
 const reducer = (state, action) => {
-  if (action.type == "SET_CURRENT_USER") {
+  if (action.type === "SET_CURRENT_USER") {
     return {
       ...state,
-      currentUser: action.payload.currentUser,
+      currentUser: action.payload.user,
     };
   }
-  if (action.type == "CHANGE_USER") {
+  if (action.type === "SET_CHAT_ID") {
+    return {
+      ...state,
+      chatId: action.payload,
+    };
+  }
+  if (action.type === "CHANGE_USER") {
+    console.log("action payload", action.payload);
+
     return {
       ...state,
       user: action.payload,
@@ -38,19 +43,15 @@ const AppProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       dispatch({ type: "SET_CURRENT_USER", payload: { user } });
     });
-
     return () => {
       unsubscribe();
     };
   }, []);
-
   return (
     <>
       <AppContext.Provider
         value={{
-          currentUser: state.currentUser,
-          chatId: state.chatId,
-          user: state.user,
+          ...state,
           dispatch,
         }}
       >
@@ -60,8 +61,12 @@ const AppProvider = ({ children }) => {
   );
 };
 
-const useAppContext = () => {
-  return useContext(AppContext);
-};
+// const useAppContext = () => {
+//   return useContext(AppContext);
+// };
 
-export { AppProvider, initialState, useAppContext };
+export {
+  AppProvider,
+  // initialState,
+  // useAppContext
+};

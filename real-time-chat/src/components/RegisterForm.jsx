@@ -4,14 +4,12 @@
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db, storage } from "../firebase";
 import { useState } from "react";
-import { push, ref } from "firebase/database";
 import { useNavigate } from "react-router-dom";
-import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 
 const RegisterForm = ({ register, setRegister }) => {
   const navigate = useNavigate();
-  const userscollection = ref(db, "users");
 
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
@@ -20,7 +18,6 @@ const RegisterForm = ({ register, setRegister }) => {
   const [image, setImage] = useState(null);
   const [errMsg, setErrMsg] = useState("error");
   const validateImage = (e) => {
-    console.log(e);
     const file = e.target.files[0];
     const allowedTypes = ["image/jpeg", "image/png"];
     const maxSize = 2 * 1024 * 1024; // 2MB in bytes
@@ -46,13 +43,13 @@ const RegisterForm = ({ register, setRegister }) => {
     setImage(file);
   };
   const handleRegister = async (e) => {
+    e.preventDefault();
     try {
       // create user
       const res = await createUserWithEmailAndPassword(auth, email, password);
-
+      console.log(res);
       // create image reference
       const storageref = ref(storage, `${email}`);
-
       await uploadBytesResumable(storageref, image).then(() => {
         getDownloadURL(storageref).then(async (imgUrl) => {
           try {
@@ -72,12 +69,12 @@ const RegisterForm = ({ register, setRegister }) => {
             await setDoc(doc(db, "userChats", res.user.uid), {});
             navigate("/");
           } catch (error) {
-            console.error(error);
+            console.error("an error occured", error);
           }
         });
       });
     } catch (error) {
-      console.error(error);
+      console.error("sorry an error occured", error);
     }
   };
   return (
@@ -87,12 +84,7 @@ const RegisterForm = ({ register, setRegister }) => {
       `}
       id="registration-form"
     >
-      <form
-        action="#"
-        // method="post"
-        // encType="multipart/form-data"
-        onSubmit={handleRegister}
-      >
+      <form encType="" onSubmit={handleRegister}>
         <div className="names">
           <label htmlFor="firstname">First Name</label>
           <input

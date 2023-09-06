@@ -1,0 +1,40 @@
+.navBar {
+  background-color: aqua;
+  padding: 5px;
+  border-radius: 10px;
+  color: orangered;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  .logo {
+    text-transform: uppercase;
+    background-color: orangered;
+    color: black;
+    font-weight: bolder;
+    border-radius: 10px;
+  }
+
+  .user {
+    display: flex;
+    align-items: center;
+    width: 70%;
+    // justify-content: center;
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+    button {
+      background: orangered;
+      outline: none;
+      border: none;
+      padding: 5px;
+      border-radius: 5px;
+
+      &:hover {
+        background: rgba(214, 132, 102, 0.979);
+      }
+    }
+  }
+}

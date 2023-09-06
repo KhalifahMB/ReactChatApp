@@ -1,9 +1,10 @@
 import { signOut } from "firebase/auth";
-import { useAppContext } from "../contexts/appContext";
+import { AppContext } from "../contexts/appContext";
 import { auth } from "../firebase";
-
+import { useContext } from "react";
+import "../assets/css/nav.scss";
 export const Navbar = () => {
-  const { currentUser } = useAppContext();
+  const { currentUser } = useContext(AppContext);
   return (
     <div className="navBar">
       <span className="logo">React Chat</span>

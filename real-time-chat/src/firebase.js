@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyApF9sapHTsVnr8Vv5YbndnVSU8FmfSin8",
@@ -17,7 +17,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 

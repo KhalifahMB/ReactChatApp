@@ -6,6 +6,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import { ErrorPage } from "./pages/ErrorPage";
+import Users from "./pages/Users";
+
 function App() {
   // const [user] = useAuthState(auth);
   return (
@@ -21,6 +23,7 @@ function App() {
             }
           />
         </Route>
+        <Route path="/users" element={<Users />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<ErrorPage />} />
       </Routes>

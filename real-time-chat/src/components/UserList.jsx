@@ -1,12 +1,12 @@
 // src/components/UserList.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { db } from "../firebase";
-import { useAppContext } from "../contexts/appContext";
+import { AppContext } from "../contexts/appContext";
 import { doc, onSnapshot } from "firebase/firestore";
 
 function UserList() {
   const [chats, setChats] = useState([]);
-  const { currentUser, dispatch } = useAppContext();
+  const { currentUser, dispatch } = useContext(AppContext);
 
   useEffect(() => {
     const getChats = () => {
@@ -28,21 +28,22 @@ function UserList() {
     <div>
       <h2>Online Users</h2>
       <div>
-        {Object.entries(chats)
-          ?.sort((a, b) => b[1].date - a[1].date)
-          .map((chat) => (
-            <div
-              className="userChat"
-              key={chat[0]}
-              onClick={() => handleSelect(chat[1].userInfo)}
-            >
-              <img src={chat[1].userInfo.photoURL} alt="" />
-              <div className="userChatInfo">
-                <span>{chat[1].userInfo.displayName}</span>
-                <p>{chat[1].lastMessage?.text}</p>
+        {chats &&
+          Object.entries(chats)
+            ?.sort((a, b) => b[1].date - a[1].date)
+            .map((chat) => (
+              <div
+                className="userChat"
+                key={chat[0]}
+                onClick={() => handleSelect(chat[1].userInfo)}
+              >
+                <img src={chat[1].userInfo.photoURL} alt="" />
+                <div className="userChatInfo">
+                  <span>{chat[1].userInfo.displayName}</span>
+                  <p>{chat[1].lastMessage?.text}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
       </div>
     </div>
   );
