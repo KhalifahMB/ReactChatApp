@@ -1,15 +1,11 @@
 /* eslint-disable react/prop-types */
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../firebase";
-import Welcome from "./Welcome";
+import { useAppContext } from "../contexts/appContext";
+import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-  const [user, loading] = useAuthState(auth);
-  if (loading) {
-    return <h1>Loading...</h1>;
-  }
-  if (!user) {
-    return <Welcome />;
+  const { currentUser } = useAppContext();
+  if (!currentUser) {
+    return <Navigate to="/login" />;
   }
   return children;
 };

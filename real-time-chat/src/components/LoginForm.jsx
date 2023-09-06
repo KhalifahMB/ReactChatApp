@@ -14,28 +14,12 @@ const LoginForm = ({ register, setRegister, googleSign }) => {
   const handleLogin = async (e) => {
     setloading(true);
     e.preventDefault();
-    console.log("logging you in soon");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-        .then((data) => {
-          alert("succes");
-          console.log(data);
-          setloading(false);
-          navigate("/");
-        })
-        .catch((error) => {
-          alert("an error occured");
-          console.log("sorry an error occured", error);
-          setloading(false);
-        });
-
-      // Redirect to the home page after successful login
-
-      // Replace with your home page route
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error);
-      // Display error message to the user if needed
     }
   };
 

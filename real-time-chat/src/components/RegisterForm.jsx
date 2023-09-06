@@ -2,10 +2,12 @@
 /* eslint-disable react/prop-types */
 
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { useState } from "react";
 import { push, ref } from "firebase/database";
 import { useNavigate } from "react-router-dom";
+import { getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { doc, setDoc } from "firebase/firestore";
 
 const RegisterForm = ({ register, setRegister }) => {
   const navigate = useNavigate();
@@ -44,22 +46,39 @@ const RegisterForm = ({ register, setRegister }) => {
     setImage(file);
   };
   const handleRegister = async (e) => {
-    e.preventDefault();
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((result) => {
-        console.log("User registered:", result);
-        navigate("/");
-        // Add additional registration logic here if needed
-      })
-      .catch((error) => {
-        console.error("Registration error:", error);
-        // Display error message to the user if needed
+    try {
+      // create user
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+
+      // create image reference
+      const storageref = ref(storage, `${email}`);
+
+      await uploadBytesResumable(storageref, image).then(() => {
+        getDownloadURL(storageref).then(async (imgUrl) => {
+          try {
+            // update profile
+            await updateProfile(res.user, {
+              displayName: `${firstName} ${lastName}`,
+              photoURL: imgUrl,
+            });
+            // create  user  on firestore
+            await setDoc(doc(db, "users", res.user.uid), {
+              uid: res.user.uid,
+              displayName: `${firstName} ${lastName}`,
+              email,
+              photoURL: imgUrl,
+            });
+            // set a user chats on firestore
+            await setDoc(doc(db, "userChats", res.user.uid), {});
+            navigate("/");
+          } catch (error) {
+            console.error(error);
+          }
+        });
       });
-    await updateProfile(auth.currentUser, {
-      displayName: `${firstName} ${lastName || ""}`,
-    })
-      .then((result) => console.log(result))
-      .catch((err) => console.log(err));
+    } catch (error) {
+      console.error(error);
+    }
   };
   return (
     <div

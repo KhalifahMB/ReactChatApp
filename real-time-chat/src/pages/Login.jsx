@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import "../assets/css/login.css";
-import LoginForm from "./LoginForm";
-import RegisterForm from "./RegisterForm";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import LoginForm from "../components/LoginForm";
+import RegisterForm from "../components/RegisterForm";
 const Login = () => {
   const navigate = useNavigate();
   const [register, setRegister] = useState(false);

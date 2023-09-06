@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
 import { getDatabase } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 const firebaseConfig = {
   apiKey: "AIzaSyApF9sapHTsVnr8Vv5YbndnVSU8FmfSin8",
   authDomain: "real-time-chat-applicati-e7c8b.firebaseapp.com",
@@ -18,9 +17,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
 const db = getDatabase(app);
-// const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
-export { app, db, auth };
+export { app, db, auth, storage };
