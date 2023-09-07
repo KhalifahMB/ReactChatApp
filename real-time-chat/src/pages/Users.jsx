@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../contexts/appContext";
+import { Link, Navigate } from "react-router-dom";
 import {
   collection,
   doc,
@@ -38,55 +39,52 @@ const Users = () => {
   }, []);
 
   const handleSelect = async (userid) => {
+    dispatch({ type: "CHANGE_USER", payload: userid });
+    //check whether the group(chats in firestore) exists, if not create
+    const combinedId =
+      currentUser.uid > user.uid
+        ? currentUser.uid + user.uid
+        : user.uid + currentUser.uid;
+    console.log("chat id ", chatId);
+    console.log("combinedId", combinedId);
+
     try {
-      dispatch({ type: "CHANGE_USER", payload: userid });
-      console.log("context user", user);
-      console.log("call", userid);
-      //check whether the group(chats in firestore) exists, if not create
-      const combinedId =
-        currentUser.uid > user.uid
-          ? currentUser.uid + user.uid
-          : user.uid + currentUser.uid;
-      await dispatch({ type: "SET_CHAT_ID", payload: combinedId });
-      console.log("chat id ", chatId);
-      console.log("combinedId", combinedId);
-    } catch (error) {
-      console.log(error);
+      const res = await getDoc(doc(db, "chats", combinedId));
+
+      if (!res.exists()) {
+        //create a chat in chats collection
+        await setDoc(doc(db, "chats", combinedId), { messages: [] });
+
+        //create user chats
+        await updateDoc(doc(db, "userChats", currentUser.uid), {
+          [combinedId + ".userInfo"]: {
+            uid: user.uid,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+          },
+          [combinedId + ".date"]: serverTimestamp(),
+        });
+
+        await updateDoc(doc(db, "userChats", user.uid), {
+          [combinedId + ".userInfo"]: {
+            uid: currentUser.uid,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL,
+          },
+          [combinedId + ".date"]: serverTimestamp(),
+        });
+      }
+    } catch (err) {
+      console.log(err);
     }
-    // try {
-    //   const res = await getDoc(doc(db, "chats", combinedId));
 
-    //   if (!res.exists()) {
-    //     //create a chat in chats collection
-    //     await setDoc(doc(db, "chats", combinedId), { messages: [] });
-
-    //     //create user chats
-    //     await updateDoc(doc(db, "userChats", currentUser.uid), {
-    //       [combinedId + ".userInfo"]: {
-    //         uid: user.uid,
-    //         displayName: user.displayName,
-    //         photoURL: user.photoURL,
-    //       },
-    //       [combinedId + ".date"]: serverTimestamp(),
-    //     });
-
-    //     await updateDoc(doc(db, "userChats", user.uid), {
-    //       [combinedId + ".userInfo"]: {
-    //         uid: currentUser.uid,
-    //         displayName: currentUser.displayName,
-    //         photoURL: currentUser.photoURL,
-    //       },
-    //       [combinedId + ".date"]: serverTimestamp(),
-    //     });
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    // }
+    <Navigate to="/" />;
   };
 
   return (
     <div className="users">
       <h1>User List</h1>
+      <Link to="/"> Back to Homes</Link>
       {err && (
         <p className="error">Error fetching users. Please try again later.</p>
       )}
