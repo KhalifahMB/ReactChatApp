@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
@@ -9,6 +9,7 @@ const LoginForm = ({ register, setRegister, googleSign }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setloading] = useState(false);
+  const [err, seterr] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -19,15 +20,27 @@ const LoginForm = ({ register, setRegister, googleSign }) => {
       await signInWithEmailAndPassword(auth, email, password);
       navigate("/");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error.message);
+      setloading(false);
+      seterr(error.message);
     }
   };
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      seterr("");
+    }, 2000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [err]);
 
   return (
     <div
       className={`innerContainer ${register ? "hidden" : ""}`}
       id="login-container"
     >
+      {err && <h1>{err}</h1>}
       <form action="#" id="login-form" onSubmit={handleLogin}>
         <div>
           <label htmlFor="email">Email:</label>
@@ -49,7 +62,11 @@ const LoginForm = ({ register, setRegister, googleSign }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <input type="submit" value="Login" disabled={loading} />
+        <input
+          type="submit"
+          value={loading ? "please wait logging in" : "Login"}
+          disabled={loading}
+        />
       </form>
       <img src={Google} onClick={googleSign} />
       <button className="btnRegs" onClick={() => setRegister(true)}>

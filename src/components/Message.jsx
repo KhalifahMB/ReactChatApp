@@ -24,7 +24,7 @@ const Message = ({ message }) => {
         />
         <div className="details">
           <p>{message.message}</p>
-          {message.img && <img src={message.img} alt="" />}
+          {message.img && <img src={message.img} className="msgImg" alt="" />}
           <span className="time">{timestamp}</span>
         </div>
       </div>

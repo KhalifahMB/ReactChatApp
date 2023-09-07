@@ -3,7 +3,7 @@
 
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db, storage } from "../firebase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDownloadURL, uploadBytesResumable, ref } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
@@ -17,6 +17,16 @@ const RegisterForm = ({ register, setRegister }) => {
   const [password, setpassword] = useState("");
   const [image, setImage] = useState(null);
   const [errMsg, setErrMsg] = useState("error");
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setErrMsg("");
+    }, 2000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [errMsg]);
   const validateImage = (e) => {
     const file = e.target.files[0];
     const allowedTypes = ["image/jpeg", "image/png"];
@@ -44,6 +54,7 @@ const RegisterForm = ({ register, setRegister }) => {
   };
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       // create user
       const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -67,6 +78,8 @@ const RegisterForm = ({ register, setRegister }) => {
             });
             // set a user chats on firestore
             await setDoc(doc(db, "userChats", res.user.uid), {});
+            alert("successfully registered");
+            setLoading(false);
             navigate("/");
           } catch (error) {
             console.error("an error occured", error);
@@ -75,6 +88,8 @@ const RegisterForm = ({ register, setRegister }) => {
       });
     } catch (error) {
       console.error("sorry an error occured", error);
+      setErrMsg(error.message);
+      setLoading(false);
     }
   };
   return (
@@ -84,6 +99,7 @@ const RegisterForm = ({ register, setRegister }) => {
       `}
       id="registration-form"
     >
+      <p className="error-message">{errMsg}</p>
       <form encType="" onSubmit={handleRegister}>
         <div className="names">
           <label htmlFor="firstname">First Name</label>
@@ -132,9 +148,12 @@ const RegisterForm = ({ register, setRegister }) => {
             // value={image}
             onChange={validateImage}
           />
-          <p className="error-message">{errMsg}</p>
         </div>
-        <input type="submit" value="Register" />
+        <input
+          type="submit"
+          value={loading ? "loading" : "Register"}
+          disabled={loading}
+        />
       </form>
       <button className="btnReg" onClick={() => setRegister(false)}>
         Login

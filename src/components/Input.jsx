@@ -5,79 +5,88 @@ import { Timestamp, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase";
 import { v4 as uuid } from "uuid";
 import { serverTimestamp } from "firebase/database";
+import "../assets/css/chat-input.scss";
 
 const Input = () => {
   const { currentUser, chatId, user } = useContext(AppContext);
 
-  const [isloading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [image, setimage] = useState(null);
+  const [image, setImage] = useState(null);
 
   const handleChange = (e) => {
     setMessage(e.target.value);
   };
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      if (image) {
-        const storageRef = ref(storage, uuid());
-        const uploadImg = uploadBytesResumable(storageRef, image);
+      if (message || image) {
+        const messageData = {
+          id: uuid(),
+          senderID: currentUser.uid,
+          date: Timestamp.now(),
+        };
 
-        uploadImg.on(
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            getDownloadURL(uploadImg.snapshot.ref).then(async (downloadUrl) => {
-              await updateDoc(doc(db, "chats", chatId), {
-                message: arrayUnion({
-                  id: uuid(),
-                  message,
-                  senderID: currentUser.uid,
-                  date: Timestamp.now(),
-                  img: downloadUrl,
-                }),
-              });
-            });
-          }
-        );
-      } else {
-        await updateDoc(doc(db, "chats", chatId), {
-          message: arrayUnion({
-            id: uuid(),
-            message,
-            senderID: currentUser.uid,
-            date: Timestamp.now(),
-          }),
-        });
+        if (message) {
+          messageData.message = message;
+        }
+
+        if (image) {
+          const storageRef = ref(storage, uuid());
+          const uploadImg = uploadBytesResumable(storageRef, image);
+
+          uploadImg.on(
+            "state_changed",
+            null,
+            (error) => {
+              console.log(error);
+            },
+            () => {
+              getDownloadURL(uploadImg.snapshot.ref).then(
+                async (downloadUrl) => {
+                  messageData.img = downloadUrl;
+                  await sendMessage(messageData);
+                }
+              );
+            }
+          );
+        } else {
+          await sendMessage(messageData);
+        }
       }
-
-      await updateDoc(doc(db, "userChats", currentUser.uid), {
-        [chatId + ".lastMessage"]: {
-          message,
-        },
-        [chatId + ".date"]: serverTimestamp(),
-      });
-
-      await updateDoc(doc(db, "userChats", user.uid), {
-        [chatId + ".lastMessage"]: {
-          message,
-        },
-        [chatId + ".date"]: serverTimestamp(),
-      });
 
       setLoading(false);
       setMessage("");
-      setimage(null);
+      setImage(null);
     } catch (error) {
       console.log("Error sending message:", error);
       setLoading(false);
-      setMessage("");
-      setimage(null);
     }
   };
+
+  const sendMessage = async (messageData) => {
+    await updateDoc(doc(db, "chats", chatId), {
+      message: arrayUnion(messageData),
+    });
+
+    const chatUpdate = {
+      [chatId + ".lastMessage"]: {
+        message: messageData.message || "Image",
+        date: serverTimestamp(),
+      },
+    };
+
+    await updateDoc(doc(db, "userChats", currentUser.uid), chatUpdate);
+    await updateDoc(doc(db, "userChats", user.uid), chatUpdate);
+  };
+
   return (
     <div className="chat-input">
       <form className="input" onSubmit={handleSubmit}>
@@ -89,21 +98,21 @@ const Input = () => {
           onChange={handleChange}
         />
         <div>
-          <label htmlFor="file">
-            <span style={{ cursor: "pointer" }}>&#128247;</span>
+          <label htmlFor="file" className="image-upload-label">
+            &#128247;
+            <input
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleImageChange}
+              id="file"
+            />
           </label>
-          <input
-            type="file"
-            style={{ display: "none" }}
-            onChange={(e) => setimage(e.target.files[0])}
-            id="file"
-          />
-          {message && (
+          {(message || image) && (
             <input
               type="submit"
               id="send-button"
               value="Send"
-              disabled={isloading}
+              disabled={isLoading}
             />
           )}
         </div>

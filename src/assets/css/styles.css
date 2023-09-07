@@ -160,6 +160,10 @@
   align-self: flex-start;
   cursor: pointer;
 }
+.msgImg {
+  width: 100px;
+  height: 100px;
+}
 
 .chat-input .input {
   padding: 10px;

@@ -10,6 +10,7 @@ import {
   serverTimestamp,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import "../assets/css/users.scss";
@@ -18,7 +19,15 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const { currentUser, user, chatId, dispatch } = useContext(AppContext);
   const [err, setErr] = useState(false);
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setErr("");
+    }, 2000);
 
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [err]);
   useEffect(() => {
     // Fetch users data from Firestore
     const fetchUsers = async () => {
@@ -26,6 +35,9 @@ const Users = () => {
         const querySnapshot = await getDocs(collection(db, "users"));
         const userData = [];
         querySnapshot.forEach((doc) => {
+          if (doc.data().uid == currentUser.uid) {
+            return;
+          }
           userData.push(doc.data());
         });
         setUsers(userData);
@@ -74,6 +86,7 @@ const Users = () => {
           [combinedId + ".date"]: serverTimestamp(),
         });
       }
+      alert("added to friend list");
     } catch (err) {
       console.log(err);
     }
