@@ -6,8 +6,8 @@ import { onAuthStateChanged } from "firebase/auth";
 export const AppContext = createContext();
 const initialState = {
   currentUser: {},
-  user: {},
   chatId: "null",
+  user: {},
 };
 
 const reducer = (state, action) => {
@@ -15,12 +15,6 @@ const reducer = (state, action) => {
     return {
       ...state,
       currentUser: action.payload.user,
-    };
-  }
-  if (action.type === "SET_CHAT_ID") {
-    return {
-      ...state,
-      chatId: action.payload,
     };
   }
   if (action.type === "CHANGE_USER") {

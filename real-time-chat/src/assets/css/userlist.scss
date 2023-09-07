@@ -1,0 +1,43 @@
+/* userlist.scss */
+
+.user-list-container {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.user-list-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+
+  .user-chat {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .user-chat-info {
+      .user-display-name {
+        font-weight: bold;
+      }
+
+      .user-last-message {
+        color: #555;
+      }
+    }
+  }
+}

@@ -5,9 +5,8 @@ import getRelativeTime from "../utils/getRelativeDate";
 /* eslint-disable react/prop-types */
 const Message = ({ message }) => {
   const { currentUser, user } = useContext(AppContext);
-  const timestamp = getRelativeTime(message.date);
+  const timestamp = getRelativeTime(message.date.toDate());
   const ref = useRef();
-
   return (
     <div
       ref={ref}
@@ -26,7 +25,7 @@ const Message = ({ message }) => {
         <div className="details">
           <p>{message.message}</p>
           {message.img && <img src={message.img} alt="" />}
-          <span>{timestamp}</span>
+          <span className="time">{timestamp}</span>
         </div>
       </div>
     </div>
